@@ -1,0 +1,22 @@
+---
+- hosts: myweb
+  sudo: yes
+
+  vars:
+   - MyMessage: "Hello World"
+
+  tasks:
+    - name: install apache2
+      apt: name=apache2 update_cache=yes state=latest
+
+    - name: enabled mod_rewrite
+      apache2_module: name=rewrite state=present
+      notify:
+        - restart apache2
+   
+    - name: index.html copy
+      template: src=index.html.j2 dest=/var/www/html/index.html
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
